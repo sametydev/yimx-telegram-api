@@ -1,0 +1,52 @@
+//importing modules
+import "stdsx"
+import "http"
+import "json"
+import "functional"
+
+// Telegram API example
+//Yimgram Class
+
+class Yimgram{
+
+TOKEN = "enterYourTokenHere"
+
+//for HTTP URL Params
+def toParams(obj) {
+  str = ""
+  for k, v : obj
+    str += k + "=" + v + "&"
+  return str
+}
+//Creating Raw URL
+def CREATE_RAW_URI(method, params, TOKEN = "") = "https://api.telegram.org/bot" + TOKEN + "/" + method + "?"+params+"access_TOKEN="+TOKEN
+
+//Creating URL from RAW URL
+def CREATE_URL(method, params, TOKEN = "") = CREATE_RAW_URI(method, toParams(params), TOKEN)
+
+//Decoding JSON
+def INVOKE_F_JSON(method, params, callback) = http(CREATE_URL(method, params, TOKEN), combine(::jsondecode, callback))
+
+//Easy command def
+def INVOKE(method, params, callback) = http(CREATE_URL(method, params, TOKEN), callback)
+
+//Send Message Example, and Print Callback with echo
+def MessageSend(msg = "", chatId = 1) {
+  INVOKE("sendMessage", {
+    "chat_id": chatId,
+    "msg": msg
+  }, ::echo)
+}
+
+
+// Get Updates Function Defination
+def FETCH_UPDATES() = invoke("getUpdates", {}, ::echo)
+
+
+// Get updates in chat
+FETCH_UPDATES()
+
+//Send Message on Channel
+MessageSend("Hello", "@yimxlang")
+
+}
